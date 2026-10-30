@@ -16,7 +16,7 @@ Read the [Starlight Compass docs](https://starlight-compass.netlify.app).
 
 ## Package
 
-If you are looking for the Starlight plugin package, you can find it in the [`packages/starlight-compass/`](https://github.com/trueberryless-org/starlight-compass/tree/main/packages/starlight-compass) directory.
+If you are looking for the Starlight plugin package, you can find it in the [`packages/starlight-compass/`](https://github.com/trueberryless/starlight-compass/tree/main/packages/starlight-compass) directory.
 
 ## Project structure
 
@@ -26,4 +26,4 @@ This project uses pnpm workspaces to develop a single Starlight plugin from the 
 
 Licensed under the MIT License, Copyright © trueberryless.
 
-See [LICENSE](https://github.com/trueberryless-org/starlight-compass/blob/main/LICENSE) for more information.
+See [LICENSE](https://github.com/trueberryless/starlight-compass/blob/main/LICENSE) for more information.

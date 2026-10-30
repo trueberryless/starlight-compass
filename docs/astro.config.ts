@@ -47,7 +47,7 @@ export default defineConfig({
       ],
       editLink: {
         baseUrl:
-          "https://github.com/trueberryless-org/starlight-compass/edit/main/docs/",
+          "https://github.com/trueberryless/starlight-compass/edit/main/docs/",
       },
       plugins: [
         starlightCompass({
@@ -112,7 +112,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/trueberryless-org/starlight-compass",
+          href: "https://github.com/trueberryless/starlight-compass",
         },
       ],
     }),

@@ -20,4 +20,4 @@ Check out the [`starlight-compass` getting started guide](https://starlight-comp
 
 Licensed under the MIT license, Copyright © trueberryless.
 
-See [LICENSE](https://github.com/trueberryless-org/starlight-compass/blob/main/LICENSE) for more information.
+See [LICENSE](https://github.com/trueberryless/starlight-compass/blob/main/LICENSE) for more information.
