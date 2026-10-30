@@ -32,7 +32,7 @@
   "homepage": "https://starlight-compass.netlify.app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/trueberryless-org/starlight-compass.git"
+    "url": "git+https://github.com/trueberryless/starlight-compass.git"
   },
-  "bugs": "https://github.com/trueberryless-org/starlight-compass/issues"
+  "bugs": "https://github.com/trueberryless/starlight-compass/issues"
 }

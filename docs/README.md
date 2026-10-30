@@ -12,10 +12,10 @@ pnpm run dev
 
 To try the Compass dev toolbar app, copy `.env.example` to `.env` and add a TypeSafe API key. To run an audit, run `STARLIGHT_COMPASS_AUDIT=1 pnpm run build`.
 
-Content can be found in the [`src/content/docs/`](https://github.com/trueberryless-org/starlight-compass/tree/main/docs/src/content/docs) directory.
+Content can be found in the [`src/content/docs/`](https://github.com/trueberryless/starlight-compass/tree/main/docs/src/content/docs) directory.
 
 ## License
 
 Licensed under the MIT License, Copyright © trueberryless.
 
-See [LICENSE](https://github.com/trueberryless-org/starlight-compass/blob/main/LICENSE) for more information.
+See [LICENSE](https://github.com/trueberryless/starlight-compass/blob/main/LICENSE) for more information.
