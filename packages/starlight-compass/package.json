@@ -1,6 +1,6 @@
 {
   "name": "starlight-compass",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Starlight plugin to review your documentation with typed AI decisions.",
   "keywords": [
     "starlight",
