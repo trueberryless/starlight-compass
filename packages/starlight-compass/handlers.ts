@@ -122,7 +122,7 @@ export interface AskHandlerOptions {
    * @default 0.3
    */
   minProbability?: number;
-  /** The provider answering the questions, e.g. `typesafe()` or `openaiCompatible()`. */
+  /** The provider answering the questions, e.g. `typesafe()`, `openaiDecisions()` or `openaiCompatible()`. */
   provider: CompassProvider;
 }
 
@@ -137,6 +137,6 @@ export interface FeedbackHandlerOptions {
    * Receives every triaged feedback, e.g. to create a labeled GitHub issue. Errors turn the response into a failure.
    */
   onFeedback: (feedback: TriagedFeedback) => Promise<void> | void;
-  /** The provider answering the questions, e.g. `typesafe()` or `openaiCompatible()`. */
+  /** The provider answering the questions, e.g. `typesafe()`, `openaiDecisions()` or `openaiCompatible()`. */
   provider: CompassProvider;
 }

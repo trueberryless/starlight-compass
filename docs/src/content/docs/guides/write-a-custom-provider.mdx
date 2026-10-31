@@ -8,7 +8,7 @@ import { Steps } from "@astrojs/starlight/components";
 
 A provider receives the typed questions of all [rules](/reference/rules/) for a page and returns an answer for each. This guide writes a provider for an in-house service that rates documentation, to show the mechanics.
 
-If your service implements the OpenAI chat completions API, use [`openaiCompatible()`](/reference/providers/#openaicompatible) instead.
+If your service implements the OpenAI Decisions API, use [`openaiDecisions()`](/reference/providers/#openaidecisions) instead. If it implements the OpenAI chat completions API, use [`openaiCompatible()`](/reference/providers/#openaicompatible).
 
 :::caution
 The provider API is experimental and may change in minor releases before `1.0`.

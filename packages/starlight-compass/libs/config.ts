@@ -9,7 +9,10 @@ const providerSchema = z.custom<CompassProvider>(
   (value) =>
     isObjectWith(value, "name", "string") &&
     isObjectWith(value, "createClient", "function"),
-  { message: "Expected a provider, e.g. `typesafe()` or `openaiCompatible()`." }
+  {
+    message:
+      "Expected a provider, e.g. `typesafe()`, `openaiDecisions()` or `openaiCompatible()`.",
+  }
 );
 
 const ruleSchema = z.custom<CompassRule>(
@@ -68,7 +71,7 @@ const configSchema = z.object({
   /**
    * Adds an "Ask the docs" button with a sparkle icon next to the search field, which opens a form linking readers
    * to the pages that answer their question. Requires an Astro adapter, because it adds an endpoint that queries
-   * your provider, and a provider that can be recreated on the server: `typesafe()` or `openaiCompatible()`.
+   * your provider, and a provider that can be recreated on the server: `typesafe()`, `openaiDecisions()` or `openaiCompatible()`.
    *
    * The button replaces the `Search` component, so it is skipped with a warning when you already override it.
    *
@@ -98,7 +101,7 @@ const configSchema = z.object({
    */
   devToolbar: z.boolean().default(true),
   /**
-   * The provider answering the questions of every rule, e.g. `typesafe()` or `openaiCompatible()`.
+   * The provider answering the questions of every rule, e.g. `typesafe()`, `openaiDecisions()` or `openaiCompatible()`.
    *
    * @see https://starlight-compass.netlify.app/reference/providers/
    */

@@ -17,7 +17,7 @@ Compass separates _what_ to ask from _who_ answers:
 - [Rules](/reference/rules/) decide which questions to ask about a page and how to interpret the answers, like the [`diataxis`](/concepts/diataxis/) rule.
 - [Providers](/reference/providers/) answer the questions.
 
-A provider is named after the API it speaks, not after the model behind it. [`typesafe()`](/reference/providers/#typesafe) speaks the API of TypeSafe's models, which are built for typed answers. [`openaiCompatible()`](/reference/providers/#openaicompatible) speaks the chat completions API that OpenAI, OpenRouter, DeepSeek, Ollama and many others implement, so it covers all of them with a `baseUrl` and a `model`. When another vendor offers models that answer typed questions, it gets its own provider, or you [write one](/guides/write-a-custom-provider/). Rules never change, because they only describe questions.
+A provider is named after the API it speaks, not after the model behind it. [`typesafe()`](/reference/providers/#typesafe) speaks the API of TypeSafe's models, and [`openaiDecisions()`](/reference/providers/#openaidecisions) the Decisions API of OpenAI's, which are both built for typed answers. [`openaiCompatible()`](/reference/providers/#openaicompatible) speaks the chat completions API that OpenAI, OpenRouter, DeepSeek, Ollama and many others implement, so it covers all of them with a `baseUrl` and a `model`. When another vendor offers models that answer typed questions, it gets its own provider, or you [write one](/guides/write-a-custom-provider/). Rules never change, because they only describe questions.
 
 Rules can also come from outside Compass, for example to review the frontmatter of your own site, as shown in [Write a custom rule](/guides/write-a-custom-rule/).
 

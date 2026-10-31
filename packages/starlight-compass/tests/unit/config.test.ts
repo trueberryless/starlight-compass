@@ -15,7 +15,7 @@ describe("validateConfig", () => {
   });
 
   test("throws without a provider", () => {
-    expect(() => validateConfig(undefined)).toThrow("Expected a provider, e.g. `typesafe()` or `openaiCompatible()`.");
+    expect(() => validateConfig(undefined)).toThrow("Expected a provider, e.g. `typesafe()`, `openaiDecisions()` or `openaiCompatible()`.");
     expect(() => validateConfig({})).toThrow("Expected a provider");
   });
 

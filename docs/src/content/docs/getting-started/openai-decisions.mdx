@@ -1,0 +1,46 @@
+---
+title: Set up OpenAI Decisions
+description: Use OpenAI's GPT-6 Luna, which answers typed questions with calibrated probabilities through the Decisions API, as the provider of Compass.
+diataxis: how-to
+---
+
+import { Steps } from "@astrojs/starlight/components";
+
+The [OpenAI Decisions API](https://developers.openai.com/api/docs/guides/decisions) answers typed questions about an input with calibrated probabilities, like TypeSafe's Jev. That is what [rules](/reference/rules/) ask for, so this provider gives reliable findings, also when you [audit in CI](/guides/audit-in-ci/).
+
+## Prerequisites
+
+- Compass [installed](/getting-started/) in your Starlight site.
+- An OpenAI API key for an organization with access to the Decisions API. [Create a key](https://platform.openai.com/api-keys) in the OpenAI dashboard.
+
+## Configure the provider
+
+<Steps>
+
+1. Create a `.env` file in your project root with your API key. Make sure `.env` is listed in your `.gitignore` file.
+
+   ```sh title=".env"
+   OPENAI_API_KEY=sk-...
+   ```
+
+2. Add the plugin with the [`openaiDecisions()`](/reference/providers/#openaidecisions) provider to your Starlight configuration:
+
+   ```diff lang="js"
+   // astro.config.mjs
+   import starlight from "@astrojs/starlight";
+   import { defineConfig } from "astro/config";
+   +import starlightCompass, { openaiDecisions } from "starlight-compass";
+
+   export default defineConfig({
+     integrations: [
+       starlight({
+   +      plugins: [starlightCompass({ provider: openaiDecisions() })],
+         title: "My Docs",
+       }),
+     ],
+   });
+   ```
+
+</Steps>
+
+The provider uses `gpt-6-luna` by default. To use another server that implements the Decisions API, like [LocalAI](https://localai.io/docs/features/decisions/), set its [`baseUrl`](/reference/providers/#baseurl) and [`model`](/reference/providers/#model-1). Next, [review your first page](/getting-started/review-your-first-page/).

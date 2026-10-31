@@ -9,7 +9,7 @@ import { Steps, Tabs, TabItem } from "@astrojs/starlight/components";
 Many services and servers implement the OpenAI chat completions API, so one provider covers them all: you only choose the service and the model. Compass asks the model for probabilities as JSON and validates them.
 
 :::caution
-Chat models state probabilities they have not calibrated, and they can change between model versions. Use this provider for reviews in the dev toolbar, and prefer [TypeSafe](/getting-started/typesafe/) when you fail builds on findings.
+Chat models state probabilities they have not calibrated, and they can change between model versions. Use this provider for reviews in the dev toolbar, and prefer [TypeSafe](/getting-started/typesafe/) or [OpenAI Decisions](/getting-started/openai-decisions/) when you fail builds on findings.
 :::
 
 ## Prerequisites
@@ -75,7 +75,7 @@ Chat models state probabilities they have not calibrated, and they can change be
    OPENAI_API_KEY=sk-...
    ```
 
-   The provider reads the `OPENAI_API_KEY` variable whatever the service is. Pass the [`apiKey`](/reference/providers/#apikey-1) option to read another variable.
+   The provider reads the `OPENAI_API_KEY` variable whatever the service is. Pass the [`apiKey`](/reference/providers/#apikey-2) option to read another variable.
 
 </Steps>
 
