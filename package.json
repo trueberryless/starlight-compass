@@ -1,17 +1,25 @@
 {
   "name": "starlight-compass-monorepo",
   "version": "0.0.0",
-  "license": "MIT",
-  "description": "Starlight plugin to review your documentation with typed AI decisions.",
-  "author": "trueberryless <trueberryless@gmail.com> (https://felixs.dev)",
   "private": true,
+  "description": "Starlight plugin to review your documentation with typed AI decisions.",
+  "homepage": "https://github.com/trueberryless/starlight-compass",
+  "bugs": {
+    "url": "https://github.com/trueberryless/starlight-compass/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trueberryless/starlight-compass.git"
+  },
+  "license": "MIT",
+  "author": "trueberryless <trueberryless@gmail.com> (https://felixs.dev)",
   "type": "module",
   "scripts": {
     "build": "pnpm --filter starlight-compass-docs build",
     "check": "pnpm --filter starlight-compass-docs astro sync && astro check --noSync",
     "dev": "pnpm --filter starlight-compass-docs dev",
-    "preview": "pnpm --filter starlight-compass-docs preview",
     "format": "prettier . --write --cache --ignore-unknown",
+    "preview": "pnpm --filter starlight-compass-docs preview",
     "test": "pnpm --filter starlight-compass test",
     "version": "pnpm changeset version && pnpm i --no-frozen-lockfile"
   },
@@ -19,20 +27,14 @@
     "@astrojs/check": "^0.9.10",
     "@changesets/changelog-github": "^1.0.1",
     "@changesets/cli": "^3.0.3",
-    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@trivago/prettier-plugin-sort-imports": "6.0.2",
     "astro": "^7.3.5",
-    "prettier": "^3.9.9",
-    "prettier-plugin-astro": "^1.1.0",
+    "prettier": "3.9.9",
+    "prettier-plugin-astro": "1.1.0",
     "typescript": "^6.0.3"
   },
-  "packageManager": "pnpm@12.6.0",
+  "packageManager": "pnpm@11.28.0",
   "engines": {
     "node": ">=22.12.0"
-  },
-  "homepage": "https://starlight-compass.netlify.app",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/trueberryless/starlight-compass.git"
-  },
-  "bugs": "https://github.com/trueberryless/starlight-compass/issues"
+  }
 }
