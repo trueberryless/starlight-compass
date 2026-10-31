@@ -1,10 +1,12 @@
 packages:
-  - "docs/"
-  - "packages/*"
-
+  - docs/
+  - packages/**/*
+  - packages/*
 allowBuilds:
-  esbuild: false # https://github.com/evanw/esbuild/issues/4085#issuecomment-2696009329
+  "@parcel/watcher": false
+  "@tailwindcss/oxide": false
+  canvas: false
+  esbuild: false
   sharp: true
-
-# Prevent installing packages published in the last 3 days.
+  unrs-resolver: false
 minimumReleaseAge: 4320

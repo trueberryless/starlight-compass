@@ -139,3 +139,7 @@ dist
 
 # Test fixtures
 !packages/starlight-compass/tests/fixtures/**/.env
+
+# Playwright
+playwright-report/
+test-results/
