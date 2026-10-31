@@ -9,7 +9,10 @@ const providerSchema = z.custom<CompassProvider>(
   (value) =>
     isObjectWith(value, "name", "string") &&
     isObjectWith(value, "createClient", "function"),
-  { message: "Expected a provider, e.g. `typesafe()`, `openaiDecisions()` or `openaiCompatible()`." }
+  {
+    message:
+      "Expected a provider, e.g. `typesafe()`, `openaiDecisions()` or `openaiCompatible()`.",
+  }
 );
 
 const ruleSchema = z.custom<CompassRule>(
