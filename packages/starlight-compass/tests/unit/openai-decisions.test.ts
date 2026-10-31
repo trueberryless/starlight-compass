@@ -163,6 +163,41 @@ describe("askOpenAIDecisions", () => {
     expect(Object.keys(answers)).toHaveLength(450);
   });
 
+  test("sends the first batch before the others to reuse its prompt cache", async () => {
+    const questions = Object.fromEntries(
+      Array.from({ length: 450 }, (_, index) => [`q${index}`, { instructions: "Yes?", type: "boolean" as const }])
+    );
+    let pending = 0;
+    const pendingAtStart: number[] = [];
+    const fetch = vi.fn<typeof globalThis.fetch>(async (_url, init) => {
+      pendingAtStart.push(pending++);
+      await Promise.resolve();
+      pending--;
+      const body = JSON.parse(String(init?.body)) as { questions: { name: string }[] };
+
+      return Response.json({
+        answers: body.questions.map(({ name }) => ({ name, probability: 0.5, type: "predicate" })),
+        model: "gpt-6-luna",
+      });
+    });
+
+    await askOpenAIDecisions({ questions, state: "Hi" }, { ...options, fetch });
+
+    expect(pendingAtStart).toEqual([0, 0, 1]);
+  });
+
+  test.each([
+    ["a score question with 11 levels", { instructions: "?", levels: Array.from({ length: 11 }, String), type: "score" as const }, "has 11 levels, but the OpenAI Decisions API accepts 2 to 10."],
+    ["a choice question with 1 option", { instructions: "?", options: { only: null }, type: "choice" as const }, "has 1 options, but the OpenAI Decisions API accepts 2 to 255."],
+  ])("rejects %s before sending a request", async (_name, question, message) => {
+    const fetch = vi.fn(async () => Response.json(decisionResponse));
+
+    await expect(
+      askOpenAIDecisions({ ...request, questions: { ...request.questions, unsupported: question } }, { ...options, fetch })
+    ).rejects.toThrow(message);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   test("retries rate-limited requests", async () => {
     vi.useFakeTimers();
     const fetch = vi
@@ -199,6 +234,54 @@ describe("askOpenAIDecisions", () => {
     );
 
     await expect(askOpenAIDecisions(request, { ...options, fetch })).rejects.toThrow(message);
+  });
+
+  test.each([
+    [
+      "a choice that is not an option",
+      { choice: "nope", confidence: 0.8, name: "topic", probabilities: [{ probability: 1, value: "nope" }], type: "choice" },
+    ],
+    [
+      "a missing choice probability",
+      { choice: "cli", confidence: 0.8, name: "topic", probabilities: [{ probability: 1, value: "cli" }], type: "choice" },
+    ],
+  ])("rejects a response with %s", async (_name, answer) => {
+    const fetch = vi.fn(async () =>
+      Response.json({ ...decisionResponse, answers: decisionResponse.answers.map((entry) => (entry.name === "topic" ? answer : entry)) })
+    );
+
+    await expect(askOpenAIDecisions(request, { ...options, fetch })).rejects.toThrow(
+      "The answer to `topic` does not match its `choice` question."
+    );
+  });
+
+  test("rejects a response with a missing score probability", async () => {
+    const fetch = vi.fn(async () =>
+      Response.json({
+        ...decisionResponse,
+        answers: decisionResponse.answers.map((entry) =>
+          entry.name === "level" ? { ...entry, probabilities: entry.probabilities?.slice(0, 1) } : entry
+        ),
+      })
+    );
+
+    await expect(askOpenAIDecisions(request, { ...options, fetch })).rejects.toThrow(
+      "The answer to `level` does not match its `score` question."
+    );
+  });
+
+  test("does not take the answer of another question for a missing answer", async () => {
+    const fetch = vi.fn(async () =>
+      Response.json({ answers: [{ name: "b", probability: 0.9, type: "predicate" }], model: "gpt-6-luna" })
+    );
+    const questions = {
+      a: { instructions: "A?", type: "boolean" as const },
+      b: { instructions: "B?", type: "boolean" as const },
+    };
+
+    await expect(askOpenAIDecisions({ questions, state: {} }, { ...options, fetch })).rejects.toThrow(
+      "The answer to `a` is missing."
+    );
   });
 
   test("rejects a response without answers", async () => {

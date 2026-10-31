@@ -61,7 +61,9 @@ openaiDecisions({ baseUrl: "http://localhost:8080/v1", model: "my-decision-model
 
 Queries a decision model through the [OpenAI Decisions API](https://developers.openai.com/api/docs/guides/decisions), like GPT-6 Luna. Like TypeSafe's models, these models answer typed questions directly with calibrated probabilities, so the findings are as reliable to [audit in CI](/guides/audit-in-ci/). Learn how to [set it up](/getting-started/openai-decisions/).
 
-Compass maps its questions to the question types of the API: a `boolean` question becomes a `predicate`, with its `criteria` added to the instructions, a `choice` question sends its options as `choices`, and a `score` question sends its levels as `levels`. The page is sent as an `input_json` part, which the model reads as data. Requests with more than 200 questions, the limit during the public beta, are split into several requests with the same input, which the API can serve from its prompt cache.
+Compass maps its questions to the question types of the API: a `boolean` question becomes a `predicate`, with its `criteria` added to the instructions, a `choice` question sends its options as `choices`, and a `score` question sends its levels as `levels`. The page is sent as an `input_json` part, which the model reads as data. Requests with more than 200 questions, the limit during the public beta, are split into several requests with the same input. Compass sends the first one on its own, so the others can read the input from its prompt cache.
+
+The API accepts score questions with 2 to 10 levels and choice questions with 2 to 255 options, e.g. the levels of a [`quality()`](/reference/rules/#quality) rubric or the topics of [`topics()`](/reference/rules/#topics). Compass fails a review asking another number with an error naming the question, before it sends any request.
 
 The API can refuse a single question, e.g. because of its usage policies. Compass then fails the review of the page with an error naming the question, rather than guessing an answer.
 

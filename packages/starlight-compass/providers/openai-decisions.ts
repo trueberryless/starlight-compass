@@ -18,6 +18,9 @@ const MAX_QUESTIONS_PER_REQUEST = 200;
 const MAX_INPUT_JSON_BYTES = 256 * 1024;
 const MAX_INPUT_JSON_DEPTH = 32;
 const MAX_INPUT_JSON_VALUES = 10_000;
+// The number of levels of a score question and of choices of a choice question the API accepts.
+const LEVEL_LIMITS = { max: 10, min: 2 };
+const CHOICE_LIMITS = { max: 255, min: 2 };
 
 /**
  * Answers questions with the OpenAI Decisions API, which returns calibrated typed answers like TypeSafe's Jev.
@@ -68,19 +71,45 @@ export async function askOpenAIDecisions(
   options: AskOpenAIDecisionsOptions
 ): Promise<CompassResponse> {
   const entries = Object.entries(request.questions);
-  const input = getDecisionInput(request.state);
+  // Checked before any request, so a single unsupported question doesn't cost a partial review.
+  for (const [key, question] of entries) assertSupportedQuestion(key, question);
 
-  // Every batch sends the same input first, so the API can reuse its prompt cache across batches.
-  const batches = await Promise.all(
-    getBatches(entries, MAX_QUESTIONS_PER_REQUEST).map((batch) =>
-      askBatch(batch, input, options)
-    )
+  const input = getDecisionInput(request.state);
+  const [firstBatch, ...otherBatches] = getBatches(
+    entries,
+    MAX_QUESTIONS_PER_REQUEST
+  );
+  if (!firstBatch) return { answers: {}, model: options.model };
+
+  // Every batch sends the same input first. The first one writes it to the prompt cache, so the others can read it.
+  const first = await askBatch(firstBatch, input, options);
+  const others = await Promise.all(
+    otherBatches.map((batch) => askBatch(batch, input, options))
   );
 
   return {
-    answers: Object.fromEntries(batches.flatMap(({ answers }) => answers)),
-    model: batches[0]?.model ?? options.model,
+    answers: Object.fromEntries(
+      [first, ...others].flatMap(({ answers }) => answers)
+    ),
+    model: first.model,
   };
+}
+
+function assertSupportedQuestion(key: string, question: CompassQuestion) {
+  if (question.type === "boolean") return;
+
+  const isScore = question.type === "score";
+  const count = isScore
+    ? question.levels.length
+    : Object.keys(question.options).length;
+  const limits = isScore ? LEVEL_LIMITS : CHOICE_LIMITS;
+  const noun = isScore ? "levels" : "options";
+  if (count >= limits.min && count <= limits.max) return;
+
+  throwPluginError(
+    `The \`${question.type}\` question \`${key}\` has ${count} ${noun}, but the OpenAI Decisions API accepts ${limits.min} to ${limits.max}.`,
+    "Change the rule asking the question, e.g. the levels of a `quality()` rubric or the topics of `topics()`, or use another provider."
+  );
 }
 
 async function askBatch(
@@ -218,7 +247,7 @@ function fromDecisionResponse(
       fromDecisionAnswer(
         key,
         question,
-        answersByName.get(key) ?? answers[index]
+        answersByName.get(key) ?? getUnnamedAnswer(answers[index])
       ),
     ]),
     model: response["model"],
@@ -248,11 +277,14 @@ function fromDecisionAnswer(
       return { probability: answer["probability"], type: "boolean" };
     case "choice": {
       if (answer["type"] !== "choice") break;
-      const { choice, confidence, probabilities } = answer;
+      const { choice, confidence } = answer;
+      const options = Object.keys(question.options);
+      const probabilities = getProbabilities(answer["probabilities"], options);
       if (
         typeof choice !== "string" ||
+        !options.includes(choice) ||
         !isNumber(confidence) ||
-        !Array.isArray(probabilities)
+        !probabilities
       )
         break;
 
@@ -260,36 +292,22 @@ function fromDecisionAnswer(
         choice,
         confidence,
         probabilities: Object.fromEntries(
-          Object.keys(question.options).map((option) => [
-            option,
-            findProbability(
-              probabilities,
-              (entry) => entry["value"] === option
-            ),
-          ])
+          options.map((option, index) => [option, probabilities[index] ?? 0])
         ),
         type: "choice",
       };
     }
     case "score": {
       if (answer["type"] !== "score") break;
-      const { confidence, probabilities, score } = answer;
-      if (
-        !isNumber(confidence) ||
-        !isNumber(score) ||
-        !Array.isArray(probabilities)
-      )
-        break;
+      const { confidence, score } = answer;
+      // The levels are numbered from 0 by their `value`.
+      const probabilities = getProbabilities(
+        answer["probabilities"],
+        question.levels.map((_level, index) => index)
+      );
+      if (!isNumber(confidence) || !isNumber(score) || !probabilities) break;
 
-      return {
-        confidence,
-        // The levels are numbered from 0 by their `value`.
-        probabilities: question.levels.map((_level, index) =>
-          findProbability(probabilities, (entry) => entry["value"] === index)
-        ),
-        score,
-        type: "score",
-      };
+      return { confidence, probabilities, score, type: "score" };
     }
   }
 
@@ -298,15 +316,29 @@ function fromDecisionAnswer(
   );
 }
 
-function findProbability(
-  probabilities: unknown[],
-  predicate: (entry: Record<string, unknown>) => boolean
-) {
-  const probability = probabilities.filter(isRecord).find(predicate)?.[
-    "probability"
-  ];
+/** Answers keep the order of the questions, so an answer without a name belongs to the question at its position. */
+function getUnnamedAnswer(answer: unknown) {
+  return isRecord(answer) && answer["name"] == null ? answer : undefined;
+}
 
-  return isNumber(probability) ? probability : 0;
+/** Returns the probability of each value in order, or `undefined` when one of them has no probability. */
+function getProbabilities(
+  probabilities: unknown,
+  values: (number | string)[]
+): number[] | undefined {
+  if (!Array.isArray(probabilities)) return;
+
+  const entries = probabilities.filter(isRecord);
+  const result: number[] = [];
+  for (const value of values) {
+    const probability = entries.find((entry) => entry["value"] === value)?.[
+      "probability"
+    ];
+    if (!isNumber(probability)) return;
+    result.push(probability);
+  }
+
+  return result;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
