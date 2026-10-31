@@ -31,7 +31,7 @@ starlight({
 
 Adds an "Ask the docs" button with a sparkle icon next to the search field, which opens a form linking readers to the pages that answer their question. See [Let readers ask the docs](/guides/ask-the-docs/).
 
-The option needs an [Astro adapter](https://docs.astro.build/en/guides/on-demand-rendering/) and a [`typesafe()`](/reference/providers/#typesafe) or [`openaiCompatible()`](/reference/providers/#openaicompatible) provider. It adds an endpoint and replaces Starlight's `Search` component, so the button is skipped with a warning when you already override it. Set it to `true` to use the defaults, or pass an object:
+The option needs an [Astro adapter](https://docs.astro.build/en/guides/on-demand-rendering/) and a [`typesafe()`](/reference/providers/#typesafe), [`openaiDecisions()`](/reference/providers/#openaidecisions) or [`openaiCompatible()`](/reference/providers/#openaicompatible) provider. It adds an endpoint and replaces Starlight's `Search` component, so the button is skipped with a warning when you already override it. Set it to `true` to use the defaults, or pass an object:
 
 ```js
 ask: { maxPages: 3, minProbability: 0.3, rateLimit: 20, route: "/api/ask" }
@@ -96,7 +96,7 @@ Whether to add the Compass app to the Astro dev toolbar. The app is only added w
 
 **Type:** [`CompassProvider`](/reference/providers/#compassprovider)
 
-The provider answering the questions of every rule, e.g. [`typesafe()`](/reference/providers/#typesafe) or [`openaiCompatible()`](/reference/providers/#openaicompatible). The option is required, because Compass has no default provider. See [Providers](/reference/providers/) and [Getting Started](/getting-started/).
+The provider answering the questions of every rule, e.g. [`typesafe()`](/reference/providers/#typesafe), [`openaiDecisions()`](/reference/providers/#openaidecisions) or [`openaiCompatible()`](/reference/providers/#openaicompatible). The option is required, because Compass has no default provider. See [Providers](/reference/providers/) and [Getting Started](/getting-started/).
 
 ### `rules`
 
@@ -119,7 +119,7 @@ The API key read by the [`typesafe()`](/reference/providers/#typesafe) provider.
 
 ### `OPENAI_API_KEY`
 
-The API key read by the [`openaiCompatible()`](/reference/providers/#openaicompatible) provider.
+The API key read by the [`openaiDecisions()`](/reference/providers/#openaidecisions) and [`openaiCompatible()`](/reference/providers/#openaicompatible) providers.
 
 ## Frontmatter
 

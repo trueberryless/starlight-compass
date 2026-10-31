@@ -14,6 +14,7 @@ import { getCompassPages } from "./libs/store";
 import { TOOLBAR_APP_ID, setupToolbarServer } from "./libs/toolbar";
 
 export { openaiCompatible } from "./providers/openai-compatible";
+export { openaiDecisions } from "./providers/openai-decisions";
 export { typesafe } from "./providers/typesafe";
 export { blog } from "./rules/blog";
 export { diataxis } from "./rules/diataxis";
@@ -45,6 +46,7 @@ export type {
   CompassRuleResult,
 } from "./libs/rule";
 export type { OpenAICompatibleOptions } from "./providers/openai-compatible";
+export type { OpenAIDecisionsOptions } from "./providers/openai-decisions";
 export type { TypesafeOptions } from "./providers/typesafe";
 export type { BlogOptions } from "./rules/blog";
 export type { DiataxisOptions, DiataxisType } from "./rules/diataxis";

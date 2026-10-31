@@ -19,7 +19,7 @@ export interface CompassProvider {
 
 export interface CompassProviderSerialization {
   /** The name of a built-in provider factory to call with the `options`. */
-  factory: "openaiCompatible" | "typesafe";
+  factory: "openaiCompatible" | "openaiDecisions" | "typesafe";
   /** The JSON-serializable options of the factory. */
   options: unknown;
 }

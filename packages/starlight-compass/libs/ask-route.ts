@@ -13,6 +13,7 @@ const FACTORY_MODULES = {
     "../providers/openai-compatible.ts",
     import.meta.url
   ),
+  openaiDecisions: new URL("../providers/openai-decisions.ts", import.meta.url),
   typesafe: new URL("../providers/typesafe.ts", import.meta.url),
 } as const;
 
@@ -52,7 +53,7 @@ export function getProviderModule(provider: CompassProvider) {
   if (!serialization) {
     throwPluginError(
       `The \`${provider.name}\` provider cannot be used with the \`ask\` option.`,
-      "Use `typesafe()` or `openaiCompatible()`, or set up the `createAskHandler()` endpoint yourself."
+      "Use `typesafe()`, `openaiDecisions()` or `openaiCompatible()`, or set up the `createAskHandler()` endpoint yourself."
     );
   }
 

@@ -11,6 +11,7 @@ Providers are named after the API they speak, not after the model behind it:
 | Provider                                    | API                                                                                          | Use it with                                                   |
 | ------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | [`typesafe()`](#typesafe)                   | The [System One](https://docs.typesafe.ai) API, which returns calibrated typed answers.      | TypeSafe's Jev.                                               |
+| [`openaiDecisions()`](#openaidecisions)     | The [OpenAI Decisions](https://developers.openai.com/api/docs/guides/decisions) API, which returns calibrated typed answers. | OpenAI's GPT-6 Luna, LocalAI.                  |
 | [`openaiCompatible()`](#openaicompatible)   | The OpenAI chat completions API with structured outputs, which many services implement.      | OpenAI, OpenRouter, DeepSeek, Ollama, vLLM and similar.       |
 
 [Write your own provider](#compassprovider) for any other API.
@@ -46,6 +47,52 @@ The [model](https://docs.typesafe.ai/models) to query. Pin a version for reprodu
 
 A custom `fetch` implementation, e.g. to route requests through a proxy. The [`ask`](/reference/configuration/#ask) option recreates the provider on the server without it.
 
+## `openaiDecisions()`
+
+```js
+import { openaiDecisions } from "starlight-compass";
+
+// OpenAI
+openaiDecisions();
+
+// Any other server that implements the API, e.g. LocalAI. No API key needed.
+openaiDecisions({ baseUrl: "http://localhost:8080/v1", model: "my-decision-model" });
+```
+
+Queries a decision model through the [OpenAI Decisions API](https://developers.openai.com/api/docs/guides/decisions), like GPT-6 Luna. Like TypeSafe's models, these models answer typed questions directly with calibrated probabilities, so the findings are as reliable to [audit in CI](/guides/audit-in-ci/). Learn how to [set it up](/getting-started/openai-decisions/).
+
+Compass maps its questions to the question types of the API: a `boolean` question becomes a `predicate`, with its `criteria` added to the instructions, a `choice` question sends its options as `choices`, and a `score` question sends its levels as `levels`. The page is sent as an `input_json` part, which the model reads as data. Requests with more than 200 questions, the limit during the public beta, are split into several requests with the same input, which the API can serve from its prompt cache.
+
+The API can refuse a single question, e.g. because of its usage policies. Compass then fails the review of the page with an error naming the question, rather than guessing an answer.
+
+### `apiKey`
+
+**Type:** `string`  
+**Default:** the `OPENAI_API_KEY` [environment variable](/reference/configuration/#environment-variables)
+
+The OpenAI API key. Prefer the environment variable to keep the key out of your repository. Without a key, the provider is only configured when you set a custom `baseUrl`, as local servers don't need one.
+
+### `baseUrl`
+
+**Type:** `string`  
+**Default:** `"https://api.openai.com/v1"`
+
+The base URL of the API, without `/decisions`.
+
+### `model`
+
+**Type:** `string`  
+**Default:** `"gpt-6-luna"`
+
+The decision model to query. Compass caches answers by this name, and records the exact model that answered, e.g. `gpt-6-luna-2026-09-29`, in its reports.
+
+### `fetch`
+
+**Type:** `typeof fetch`  
+**Default:** `globalThis.fetch`
+
+A custom `fetch` implementation, e.g. to route requests through a proxy. The [`ask`](/reference/configuration/#ask) option recreates the provider on the server without it.
+
 ## `openaiCompatible()`
 
 ```js
@@ -64,7 +111,7 @@ openaiCompatible({ baseUrl: "http://localhost:11434/v1", model: "llama3.1" });
 Queries any model through the [chat completions API](https://platform.openai.com/docs/api-reference/chat) with structured outputs. Many services and servers implement this API, so one provider covers all of them: you only choose the `baseUrl` and the `model`. Learn how to [set it up](/getting-started/openai-compatible/). Compass asks for the probabilities as JSON, then validates them, normalizes them and turns them into the same [answers](#questions-and-answers) as any other provider.
 
 :::caution
-Chat models state probabilities they have not calibrated, and they can change between model versions. Use [`typesafe()`](#typesafe) when you fail builds on findings, and treat this provider as a fallback for reviews in the dev toolbar or with [`failOn: "never"`](/reference/configuration/#auditfailon).
+Chat models state probabilities they have not calibrated, and they can change between model versions. Use [`typesafe()`](#typesafe) or [`openaiDecisions()`](#openaidecisions) when you fail builds on findings, and treat this provider as a fallback for reviews in the dev toolbar or with [`failOn: "never"`](/reference/configuration/#auditfailon).
 :::
 
 ### `apiKey`
@@ -104,7 +151,7 @@ The provider API is experimental and may change in minor releases before `1.0`.
 ```ts
 interface CompassProvider {
   name: string;
-  serialization?: { factory: "typesafe" | "openaiCompatible"; options: unknown };
+  serialization?: { factory: "typesafe" | "openaiDecisions" | "openaiCompatible"; options: unknown };
   setupHint: string;
   createClient(context: {
     env: Record<string, string | undefined>;

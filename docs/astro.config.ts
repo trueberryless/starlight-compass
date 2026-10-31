@@ -69,6 +69,7 @@ export default defineConfig({
           items: [
             { slug: "getting-started" },
             { slug: "getting-started/typesafe" },
+            { slug: "getting-started/openai-decisions" },
             { slug: "getting-started/openai-compatible" },
             { slug: "getting-started/review-your-first-page" },
           ],
